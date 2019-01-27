@@ -1,0 +1,5 @@
+- name: "しゅじんこう"
+  chip_name: swordman_female
+  hp: 16
+  mp: 0
+  lavel: 1
