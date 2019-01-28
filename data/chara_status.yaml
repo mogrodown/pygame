@@ -1,5 +1,5 @@
-- name: "しゅじんこう"
+helo:
   chip_name: swordman_female
   hp: 16
   mp: 0
-  lavel: 1
+  level: 1

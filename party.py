@@ -16,12 +16,6 @@ class Party(object):
         """Partyにplayerを追加"""
         self.member.append(player)
 
-    def statuses(self):
-        statuses = []
-        for chara in self.member:
-            statuses.append(chara.status)
-        return statuses
-
     def show(self):
         self.is_visible = True
 

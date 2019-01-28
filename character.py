@@ -24,7 +24,7 @@ def load_charachips(dir, file):
 
 
 def load_chara_status():
-    return tools.load_parameter(os.path.join('data', 'initial_chara_status.dat'))
+    return tools.load_parameter(os.path.join('data', 'chara_status.yaml'))
 
 
 class Character(object):

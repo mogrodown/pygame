@@ -17,7 +17,7 @@ from popup import PopupManager
 from pygame.locals import (
     Rect, QUIT, DOUBLEBUF, HWSURFACE)
 import savedata
-from window import build_infomations
+from window import build_infomations, InfoWindow
 
 
 def main():
@@ -49,6 +49,7 @@ class MyRPG(object):
         sounds.load('data', 'sound.dat')
         character.load_charachips('data', 'charachip.dat')
         chara_status = character.load_chara_status()
+        print('chara status = {}'.format(chara_status))
         rpgmap.load_mapchips('data', 'mapchip.dat')
 
         # Windows関連
@@ -59,9 +60,8 @@ class MyRPG(object):
         self._popup = PopupManager()
 
         # キャラ関連
-        status = [status for status in chara_status if status['name'] == 'しゅじんこう']
         self._party = Party()
-        self._party.add(Player(status[0], (3, 5), DOWN, True, self._msgwnd))
+        self._party.add(Player(chara_status['helo'], (3, 5), DOWN, True))
         self._player = self._party.member[0]
         self._player.add_member(self._party.member)
 
@@ -113,11 +113,12 @@ class MyRPG(object):
                     [database.ACT_MEDICAL_PLANTS, database.ACT_TNT],
                     msg_engine=self._msg_engine))
             elif ret == database.ACT_STATUS:
-                status = self._party.member[0].get_status()
-                print('ST = {}'.format(status))
-                self._popup.push(menu.InfoWindow(
+                player = self._party.member[0]
+                status = player.get_status()
+                self._popup.push(InfoWindow(
                     menu.STATEINFO_FORM,
-                    [u'なまえ　' + status['name'], u'HP:27', u'MP:00', u'LEVEL:01'],
+                    [u'なまえ　' + player.personal_name, u'HP ' + str(status['hp']),
+                     u'MP ' + str(status['mp']), u'LEVEL ' + str(status['level'])],
                     msg_engine=self._msg_engine))
 
             return  # TODO 大事

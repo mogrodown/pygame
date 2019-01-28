@@ -9,11 +9,12 @@ PROB_ENCOUNT = 0.05  # エンカウント確率
 
 
 class Player(Character):
-    def __init__(self, status, pos, dir, leader, msgwnd):
+    def __init__(self, status, pos, dir, leader):
         Character.__init__(self, status['chip_name'], pos, dir, False, None)
         self.leader = leader
         self.is_visible = False
         self.status = status
+        self.personal_name = 'たかし'
 
     def get_status(self):
         return self.status
