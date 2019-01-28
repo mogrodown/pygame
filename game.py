@@ -17,6 +17,7 @@ from popup import PopupManager
 from pygame.locals import (
     Rect, QUIT, DOUBLEBUF, HWSURFACE)
 import savedata
+from window import build_infomations
 
 
 def main():
@@ -32,14 +33,11 @@ def main():
             if event.type == QUIT:
                 my_rpg.quit_game()
             if tools.is_key_action(event):
-                # アクション発生
                 my_rpg.key_action()
             elif tools.is_key_cancel(event):
-                # キャンセル発生
                 my_rpg.key_cancel()
                 pass
             else:
-                # アクション/キャンセル以外のキー入力(矢印キー等)
                 my_rpg.key_handler(event)
 
 
@@ -57,7 +55,7 @@ class MyRPG(object):
         self._msg_engine = MessageEngine()
         self._msgwnd = MessageWindow(MESSAGE_FORM, self._msg_engine)
         menu.build_menus(self._msg_engine)
-        menu.build_infomations(self._msg_engine)
+        build_infomations(self._msg_engine)
         self._popup = PopupManager()
 
         # キャラ関連
@@ -160,13 +158,6 @@ class MyRPG(object):
         offsetx = player.rect.topleft[0] - int(SCR_RECT.width / 2)
         offsety = player.rect.topleft[1] - int(SCR_RECT.height / 2)
         return offsetx, offsety
-
-    def show_info(self):
-        player = self.party.member[0]
-        self.msg_engine.draw_string(self.screen, (300, 10), self.map.name.upper())  # noqa
-        self.msg_engine.draw_string(self.screen, (300, 40), player.name.upper())  # noqa
-        self.msg_engine.draw_string(self.screen, (300, 70), '%d_%d' % (player.x, player.y))  # noqa
-
 
 if __name__ == '__main__':
     main()

@@ -6,23 +6,28 @@ import database
 import pygame
 import tools
 from pygame.locals import Rect
+from config import FONT_WIDTH, FONT_HEIGHT, LINE_HEIGHT
 
-from rpg_keyword import ACT_MEDICINAL_PLANTS
+GAMEINFO_INFOS = ['さくせい　TAKASHI', 'かいはつ　2018', 'ジャンル　RPG']
+GAMEINFO_FORM = (Rect(16, 16, 248, 142), 12, len(GAMEINFO_INFOS))
+gameinfo = None
 
 
+def build_infomations(msg_engine):
+    global gameinfo
+    gameinfo = InfoWindow(GAMEINFO_FORM, GAMEINFO_INFOS, msg_engine=msg_engine)
 
 
 class Window(object):
-    """ウィンドウの基本クラス"""
-    EDGE_WIDTH = 4  # 白枠の幅
+    EDGE_WIDTH = 4  # 白枠
 
     def __init__(self, rect):
-        self.rect = rect  # 一番外側の白い矩形
-        self.inner_rect = self.rect.inflate(-self.EDGE_WIDTH * 2, -self.EDGE_WIDTH * 2)  # noqa 内側の黒い矩形
-        self._is_visible = False  # ウィンドウを表示中か？
+        self.rect = rect
+        self.inner_rect = self.rect.inflate(
+            -self.EDGE_WIDTH * 2, -self.EDGE_WIDTH * 2)
+        self._is_visible = False
 
     def draw(self, screen):
-        """ウィンドウを描画"""
         pygame.draw.rect(screen, (255, 255, 255), self.rect, 0)
         pygame.draw.rect(screen, (0, 0, 0), self.inner_rect, 0)
 
@@ -32,9 +37,16 @@ class Window(object):
     def hide(self):
         self._is_visible = False
 
+    def key_handler(self, event):
+        pass
+
+    def key_action(self):
+        pass
+
+    def update(self):
+        pass
 
 class QueryWindow(Window):
-    LINE_HEIGHT = 8  # 行間の大きさ
     def __init__(self, query_action, msg, x, y, msg_engine):
         Window.__init__(self, Rect(x, y, 400, 120))
         self.text_rect = self.inner_rect.inflate(-32, -32)
@@ -45,22 +57,17 @@ class QueryWindow(Window):
         self.query_action = query_action
 
     def draw(self, screen):
-        fw = MessageEngine.FONT_WIDTH
-        fh = MessageEngine.FONT_HEIGHT
-
         Window.draw(self, screen)
-
         self._msg_engine.draw_string(screen, (self.text_rect[0], self.text_rect[1]), self._query_text)
 
         query = [database.menu_items[database.ACT_YES][0], database.menu_items[database.ACT_NO][0]]
         for index, data in enumerate(query):
-            dx = self.text_rect[0] + MessageEngine.FONT_WIDTH
-            dy = self.text_rect[1] + (self.LINE_HEIGHT + fh) * (index + 1)
+            dx = self.text_rect[0] + FONT_WIDTH
+            dy = self.text_rect[1] + (LINE_HEIGHT + FONT_HEIGHT) * (index + 1)
             self._msg_engine.draw_string(screen, (dx, dy), data)
 
-        # 選択中のコマンドの左側に▶を描画
         dx = self.text_rect[0]
-        dy = self.text_rect[1] + (self.LINE_HEIGHT + fh) * (self.cursol_pos + 1)
+        dy = self.text_rect[1] + (self.LINE_HEIGHT + FONT_HEIGHT) * (self.cursol_pos + 1)
         screen.blit(self.cursor, (dx, dy))
 
     def key_handler(self, event):
@@ -84,6 +91,21 @@ class QueryWindow(Window):
             return database.ACT_NONE
 
 
+class InfoWindow(Window):
+    def __init__(self, form, texts, msg_engine):
+        Window.__init__(self, form[0])
+        self.msg_engine = msg_engine
+        self.form = form
+        self.text_rect = self.inner_rect.inflate(-32, -32)
+        self.texts = texts
+
+    def draw(self, screen):
+        Window.draw(self, screen)
+        for c in range(len(self.texts)):
+            dx = self.text_rect[0] + FONT_WIDTH
+            dy = self.text_rect[1] + (LINE_HEIGHT + FONT_HEIGHT) * (c % self.form[2])
+            self.msg_engine.draw_string(screen, (dx, dy),
+                                        self.texts[c])
 
 
 class BattleCommandWindow(Window):
